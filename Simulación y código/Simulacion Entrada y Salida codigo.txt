@@ -1,0 +1,76 @@
+using System;
+using System.Diagnostics;
+using System.Threading;
+
+namespace Simulador
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Simulación de Entrada/Salida en C#");
+            Console.WriteLine("-----------------------------------");
+
+            // Simulación de PIO
+            var sw = Stopwatch.StartNew();
+            E_S_Programada();
+            sw.Stop();
+            Console.WriteLine($"E/S Programada: {sw.ElapsedMilliseconds} ms\n");
+
+            // Simulación de Interrupciones
+            sw.Restart();
+            E_S_Interrupciones();
+            sw.Stop();
+            Console.WriteLine($"E/S por Interrupciones: {sw.ElapsedMilliseconds} ms\n");
+
+            // Simulación de DMA
+            sw.Restart();
+            E_S_DMA();
+            sw.Stop();
+            Console.WriteLine($"E/S con DMA: {sw.ElapsedMilliseconds} ms\n");
+
+            // Evitar que la consola se cierre
+            Console.WriteLine("\nPresiona cualquier tecla para salir...");
+            Console.ReadKey();
+        }
+
+        // Simulación de E/S Programada (CPU siempre preguntando al dispositivo)
+        static void E_S_Programada()
+        {
+            bool datosListos = false;
+            for (int i = 0; i < 10; i++) // menos iteraciones para que se note
+            {
+                Console.WriteLine($"PIO: Consultando dispositivo... {i + 1}");
+                Thread.Sleep(500); // medio segundo por iteración
+                datosListos = true;
+            }
+            if (datosListos)
+                Console.WriteLine("PIO: Datos recibidos (CPU ocupada todo el tiempo).");
+        }
+
+        // Simulación de E/S por Interrupciones
+        static void E_S_Interrupciones()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine($"CPU trabajando... ciclo {i + 1}");
+                Thread.Sleep(300);
+                if (i == 5)
+                    DispositivoLanzaInterrupcion();
+            }
+        }
+
+        static void DispositivoLanzaInterrupcion()
+        {
+            Console.WriteLine("Interrupción: Datos listos. CPU interrumpe su trabajo y los procesa.");
+        }
+
+        // Simulación de E/S con DMA
+        static void E_S_DMA()
+        {
+            Console.WriteLine("DMA: Transferencia iniciada...");
+            Thread.Sleep(2000); // simulación de transferencia más larga
+            Console.WriteLine("DMA: Transferencia completada (CPU libre durante el proceso).");
+        }
+    }
+}
